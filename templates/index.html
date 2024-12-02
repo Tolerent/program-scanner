@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Vulnerability Identifier</title>
+    <link rel="stylesheet" href="frontend/styles.css">
+</head>
+<body>
+    <h1>Code Vulnerability Identifier</h1>
+    <p>Paste your code below or upload a file to scan for vulnerabilities.</p>
+
+    <!-- Form to paste code or upload file -->
+    <form action="/scan_code" method="post" enctype="multipart/form-data">
+        <label for="code">Paste Code:</label><br>
+        <textarea name="code" rows="10" cols="50" placeholder="Paste your code here..."></textarea><br><br>
+
+        <label for="file">Or Upload a File:</label><br>
+        <input type="file" name="file"><br><br>
+
+        <button type="submit">Scan for Vulnerabilities</button>
+    </form>
+
+    <!-- Display results using JavaScript -->
+    <div id="results"></div>
+
+    <script>
+        // Optional JavaScript to display results without page reload
+        const form = document.querySelector('form');
+        form.onsubmit = async (e) => {
+            e.preventDefault();  // Prevent form from submitting normally
+            const formData = new FormData(form);
+            const response = await fetch('/scan_code', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = "<h2>Vulnerability Scan Results:</h2>";
+            if (result.vulnerabilities && result.vulnerabilities.length > 0) {
+                result.vulnerabilities.forEach(vuln => {
+                    resultsDiv.innerHTML += `<p>${vuln.type}: ${vuln.description}</p>`;
+                });
+            } else {
+                resultsDiv.innerHTML += "<p>No vulnerabilities found.</p>";
+            }
+        };
+    </script>
+</body>
+</html>
